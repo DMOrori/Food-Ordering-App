@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 
@@ -23,6 +24,11 @@ class MenuAdapter(private val menuItems: List<MenuItem>) : RecyclerView.Adapter<
         holder.itemDescription.text = menuItem.description
         holder.itemPrice.text = "$${menuItem.price}"
         Glide.with(holder.itemView.context).load(menuItem.imageUrl).into(holder.itemImage)
+
+        holder.addToCartButton.setOnClickListener {
+            Cart.addItem(menuItem)
+            Toast.makeText(holder.itemView.context, "Added to cart", Toast.LENGTH_SHORT).show()
+        }
     }
 
     override fun getItemCount(): Int {

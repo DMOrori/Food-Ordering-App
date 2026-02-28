@@ -1,6 +1,8 @@
 package com.example.food_ordering
 
+import android.content.Intent
 import android.os.Bundle
+import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -24,5 +26,11 @@ class MenuActivity : AppCompatActivity() {
 
         val menuAdapter = MenuAdapter(menuItems)
         menuRecyclerView.adapter = menuAdapter
+
+        val viewCartButton = findViewById<Button>(R.id.viewCartButton)
+        viewCartButton.setOnClickListener {
+            val intent = Intent(this, CartActivity::class.java)
+            startActivity(intent)
+        }
     }
 }

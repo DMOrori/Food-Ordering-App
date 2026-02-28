@@ -17,12 +17,13 @@ class LoginActivity : AppCompatActivity() {
         val password = findViewById<EditText>(R.id.password)
         val loginButton = findViewById<Button>(R.id.loginButton)
         val registerRedirectText = findViewById<TextView>(R.id.registerRedirectText)
+        val adminLoginButton = findViewById<Button>(R.id.adminLoginButton)
 
         loginButton.setOnClickListener {
             // Mock login logic
             if (email.text.isNotEmpty() && password.text.isNotEmpty()) {
                 Toast.makeText(this, "Login Successful", Toast.LENGTH_SHORT).show()
-                val intent = Intent(this, MainActivity::class.java)
+                val intent = Intent(this, MenuActivity::class.java)
                 startActivity(intent)
                 finish()
             } else {
@@ -32,6 +33,11 @@ class LoginActivity : AppCompatActivity() {
 
         registerRedirectText.setOnClickListener {
             val intent = Intent(this, RegistrationActivity::class.java)
+            startActivity(intent)
+        }
+
+        adminLoginButton.setOnClickListener {
+            val intent = Intent(this, AdminLoginActivity::class.java)
             startActivity(intent)
         }
     }
