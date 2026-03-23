@@ -33,14 +33,19 @@ class RegistrationActivity : AppCompatActivity() {
             val password = passwordEt.text.toString().trim()
 
             if (validateInput(name, email, phone, password)) {
-                val user = User(name = name, email = email, phone = phone, password = password)
-                val success = dbHelper.addUser(user)
-                if (success) {
-                    Toast.makeText(this, "Registration Successful", Toast.LENGTH_SHORT).show()
-                    startActivity(Intent(this, LoginActivity::class.java))
-                    finish()
+                // Check if email already exists before adding
+                if (dbHelper.isEmailExists(email)) {
+                    Toast.makeText(this, "Email already registered. Please use a different one.", Toast.LENGTH_LONG).show()
                 } else {
-                    Toast.makeText(this, "Registration Failed. Email might already exist.", Toast.LENGTH_SHORT).show()
+                    val user = User(name = name, email = email, phone = phone, password = password)
+                    val success = dbHelper.addUser(user)
+                    if (success) {
+                        Toast.makeText(this, "Registration Successful", Toast.LENGTH_SHORT).show()
+                        startActivity(Intent(this, LoginActivity::class.java))
+                        finish()
+                    } else {
+                        Toast.makeText(this, "Registration Failed. Please try again.", Toast.LENGTH_SHORT).show()
+                    }
                 }
             }
         }

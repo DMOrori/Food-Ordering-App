@@ -17,10 +17,11 @@ class AdminLoginActivity : AppCompatActivity() {
         val adminLoginButton = findViewById<MaterialButton>(R.id.adminLoginButton)
 
         adminLoginButton.setOnClickListener {
-            val user = adminUsernameEt.text.toString()
-            val pass = adminPasswordEt.text.toString()
+            val user = adminUsernameEt.text.toString().trim()
+            val pass = adminPasswordEt.text.toString().trim()
 
-            if (user == "admin" && pass == "admin") {
+            // Using trim() to avoid issues with accidental spaces
+            if (user.equals("admin", ignoreCase = true) && pass == "admin") {
                 Toast.makeText(this, "Admin Login Successful", Toast.LENGTH_SHORT).show()
                 startActivity(Intent(this, AdminPanelActivity::class.java))
                 finish()

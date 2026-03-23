@@ -2,10 +2,11 @@ package com.example.food_ordering
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Button
+import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.button.MaterialButton
 
 class MenuActivity : AppCompatActivity() {
 
@@ -19,7 +20,8 @@ class MenuActivity : AppCompatActivity() {
         dbHelper = DatabaseHelper(this)
 
         val menuRecyclerView = findViewById<RecyclerView>(R.id.menuRecyclerView)
-        val viewCartButton = findViewById<Button>(R.id.viewCartButton)
+        val viewCartButton = findViewById<MaterialButton>(R.id.viewCartButton)
+        val logoutButton = findViewById<ImageView>(R.id.logoutButton)
 
         menuRecyclerView.layoutManager = LinearLayoutManager(this)
         
@@ -28,6 +30,15 @@ class MenuActivity : AppCompatActivity() {
         viewCartButton.setOnClickListener {
             val intent = Intent(this, CartActivity::class.java)
             startActivity(intent)
+        }
+
+        logoutButton.setOnClickListener {
+            // Clear session and go back to Login
+            SessionManager.userEmail = null
+            val intent = Intent(this, LoginActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            startActivity(intent)
+            finish()
         }
     }
 

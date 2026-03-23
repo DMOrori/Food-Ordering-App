@@ -103,6 +103,15 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         return count > 0
     }
 
+    fun isEmailExists(email: String): Boolean {
+        val db = this.readableDatabase
+        val cursor = db.query(TABLE_USERS, arrayOf(COLUMN_ID), "$COLUMN_EMAIL = ?", arrayOf(email), null, null, null)
+        val exists = cursor.count > 0
+        cursor.close()
+        db.close()
+        return exists
+    }
+
     fun getPhoneByEmail(email: String): String? {
         val db = this.readableDatabase
         val cursor = db.query(TABLE_USERS, arrayOf(COLUMN_PHONE), "$COLUMN_EMAIL = ?", arrayOf(email), null, null, null)
@@ -141,6 +150,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         if (cursor.moveToFirst()) {
             do {
                 menuList.add(MenuItem(
+                    cursor.getInt(0),
                     cursor.getString(1),
                     cursor.getString(4),
                     cursor.getDouble(2),
@@ -150,6 +160,25 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         }
         cursor.close()
         return menuList
+    }
+
+    fun updateMenuItem(item: MenuItem): Boolean {
+        val db = this.writableDatabase
+        val values = ContentValues()
+        values.put(COLUMN_MENU_NAME, item.name)
+        values.put(COLUMN_MENU_PRICE, item.price)
+        values.put(COLUMN_MENU_IMAGE, item.imageUrl)
+        values.put(COLUMN_MENU_DESC, item.description)
+        val result = db.update(TABLE_MENU, values, "$COLUMN_MENU_ID = ?", arrayOf(item.id.toString()))
+        db.close()
+        return result > 0
+    }
+
+    fun deleteMenuItem(id: Int): Boolean {
+        val db = this.writableDatabase
+        val result = db.delete(TABLE_MENU, "$COLUMN_MENU_ID = ?", arrayOf(id.toString()))
+        db.close()
+        return result > 0
     }
 
     // Order Methods
@@ -169,5 +198,11 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
     fun getAllOrders(): Cursor? {
         val db = this.readableDatabase
         return db.rawQuery("SELECT * FROM $TABLE_ORDERS", null)
+    }
+
+    fun clearOrderHistory() {
+        val db = this.writableDatabase
+        db.delete(TABLE_ORDERS, null, null)
+        db.close()
     }
 }
