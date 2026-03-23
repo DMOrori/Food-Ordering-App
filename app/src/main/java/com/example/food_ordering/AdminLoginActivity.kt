@@ -2,26 +2,27 @@ package com.example.food_ordering
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Button
-import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.material.button.MaterialButton
+import com.google.android.material.textfield.TextInputEditText
 
 class AdminLoginActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_admin_login)
 
-        val adminUsername = findViewById<EditText>(R.id.adminUsername)
-        val adminPassword = findViewById<EditText>(R.id.adminPassword)
-        val adminLoginButton = findViewById<Button>(R.id.adminLoginButton)
+        val adminUsernameEt = findViewById<TextInputEditText>(R.id.adminUsername)
+        val adminPasswordEt = findViewById<TextInputEditText>(R.id.adminPassword)
+        val adminLoginButton = findViewById<MaterialButton>(R.id.adminLoginButton)
 
         adminLoginButton.setOnClickListener {
-            // Mock admin login logic
-            if (adminUsername.text.toString() == "admin" && adminPassword.text.toString() == "admin") {
+            val user = adminUsernameEt.text.toString()
+            val pass = adminPasswordEt.text.toString()
+
+            if (user == "admin" && pass == "admin") {
                 Toast.makeText(this, "Admin Login Successful", Toast.LENGTH_SHORT).show()
-                val intent = Intent(this, AdminPanelActivity::class.java)
-                startActivity(intent)
+                startActivity(Intent(this, AdminPanelActivity::class.java))
                 finish()
             } else {
                 Toast.makeText(this, "Invalid Admin Credentials", Toast.LENGTH_SHORT).show()
