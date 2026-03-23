@@ -25,12 +25,10 @@ class AddMenuItemActivity : AppCompatActivity() {
             val imageUrl = itemImageUrlEditText.text.toString()
 
             if (name.isNotEmpty() && description.isNotEmpty() && price != null && imageUrl.isNotEmpty()) {
-                // In a real app, you'd save this to a database or a remote server.
-                // For now, we'll just add it to our in-memory list.
-                val newMenuItem = MenuItem(name, description, price, imageUrl)
-                // This is a temporary solution. Ideally, you would have a shared data source.
-                val menuActivity = MenuActivity()
-                menuActivity.addMenuItem(newMenuItem)
+                val newMenuItem = MenuItem(name, description, price!!, imageUrl)
+                
+                // Use the shared MenuData object to add the item
+                MenuData.addItem(newMenuItem)
 
                 Toast.makeText(this, "Item added successfully", Toast.LENGTH_SHORT).show()
                 finish()
