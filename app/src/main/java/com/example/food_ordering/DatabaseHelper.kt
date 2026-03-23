@@ -2,6 +2,7 @@ package com.example.food_ordering
 
 import android.content.ContentValues
 import android.content.Context
+import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 
@@ -9,7 +10,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
 
     companion object {
         private const val DATABASE_NAME = "FoodOrdering.db"
-        private const val DATABASE_VERSION = 1
+        private const val DATABASE_VERSION = 2
 
         // User table
         const val TABLE_USERS = "users"
@@ -26,6 +27,15 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         const val COLUMN_MENU_PRICE = "price"
         const val COLUMN_MENU_IMAGE = "image_url"
         const val COLUMN_MENU_DESC = "description"
+
+        // Orders table
+        const val TABLE_ORDERS = "orders"
+        const val COLUMN_ORDER_ID = "order_id"
+        const val COLUMN_USER_EMAIL = "user_email"
+        const val COLUMN_ORDER_DETAILS = "details"
+        const val COLUMN_ORDER_TOTAL = "total"
+        const val COLUMN_ORDER_STATUS = "status"
+        const val COLUMN_PAYMENT_METHOD = "payment_method"
     }
 
     override fun onCreate(db: SQLiteDatabase?) {
@@ -44,14 +54,31 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
                 + COLUMN_MENU_IMAGE + " TEXT,"
                 + COLUMN_MENU_DESC + " TEXT" + ")")
         db?.execSQL(createMenuTable)
+
+        val createOrdersTable = ("CREATE TABLE " + TABLE_ORDERS + "("
+                + COLUMN_ORDER_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
+                + COLUMN_USER_EMAIL + " TEXT,"
+                + COLUMN_ORDER_DETAILS + " TEXT,"
+                + COLUMN_ORDER_TOTAL + " REAL,"
+                + COLUMN_ORDER_STATUS + " TEXT,"
+                + COLUMN_PAYMENT_METHOD + " TEXT" + ")")
+        db?.execSQL(createOrdersTable)
     }
 
     override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
-        db?.execSQL("DROP TABLE IF EXISTS $TABLE_USERS")
-        db?.execSQL("DROP TABLE IF EXISTS $TABLE_MENU")
-        onCreate(db)
+        if (oldVersion < 2) {
+            val createOrdersTable = ("CREATE TABLE " + TABLE_ORDERS + "("
+                    + COLUMN_ORDER_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
+                    + COLUMN_USER_EMAIL + " TEXT,"
+                    + COLUMN_ORDER_DETAILS + " TEXT,"
+                    + COLUMN_ORDER_TOTAL + " REAL,"
+                    + COLUMN_ORDER_STATUS + " TEXT,"
+                    + COLUMN_PAYMENT_METHOD + " TEXT" + ")")
+            db?.execSQL(createOrdersTable)
+        }
     }
 
+    // User Methods
     fun addUser(user: User): Boolean {
         val db = this.writableDatabase
         val values = ContentValues()
@@ -74,5 +101,73 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         cursor.close()
         db.close()
         return count > 0
+    }
+
+    fun getPhoneByEmail(email: String): String? {
+        val db = this.readableDatabase
+        val cursor = db.query(TABLE_USERS, arrayOf(COLUMN_PHONE), "$COLUMN_EMAIL = ?", arrayOf(email), null, null, null)
+        var phone: String? = null
+        if (cursor.moveToFirst()) {
+            phone = cursor.getString(0)
+        }
+        cursor.close()
+        return phone
+    }
+
+    fun updatePassword(email: String, newPass: String): Boolean {
+        val db = this.writableDatabase
+        val values = ContentValues().apply { put(COLUMN_PASSWORD, newPass) }
+        val result = db.update(TABLE_USERS, values, "$COLUMN_EMAIL = ?", arrayOf(email))
+        return result > 0
+    }
+
+    // Menu Methods
+    fun addMenuItem(item: MenuItem): Boolean {
+        val db = this.writableDatabase
+        val values = ContentValues()
+        values.put(COLUMN_MENU_NAME, item.name)
+        values.put(COLUMN_MENU_PRICE, item.price)
+        values.put(COLUMN_MENU_IMAGE, item.imageUrl)
+        values.put(COLUMN_MENU_DESC, item.description)
+        val success = db.insert(TABLE_MENU, null, values)
+        db.close()
+        return success != -1L
+    }
+
+    fun getAllMenuItems(): List<MenuItem> {
+        val menuList = mutableListOf<MenuItem>()
+        val db = this.readableDatabase
+        val cursor = db.rawQuery("SELECT * FROM $TABLE_MENU", null)
+        if (cursor.moveToFirst()) {
+            do {
+                menuList.add(MenuItem(
+                    cursor.getString(1),
+                    cursor.getString(4),
+                    cursor.getDouble(2),
+                    cursor.getString(3)
+                ))
+            } while (cursor.moveToNext())
+        }
+        cursor.close()
+        return menuList
+    }
+
+    // Order Methods
+    fun addOrder(email: String, details: String, total: Double, method: String): Boolean {
+        val db = this.writableDatabase
+        val values = ContentValues()
+        values.put(COLUMN_USER_EMAIL, email)
+        values.put(COLUMN_ORDER_DETAILS, details)
+        values.put(COLUMN_ORDER_TOTAL, total)
+        values.put(COLUMN_ORDER_STATUS, "Paid")
+        values.put(COLUMN_PAYMENT_METHOD, method)
+        val success = db.insert(TABLE_ORDERS, null, values)
+        db.close()
+        return success != -1L
+    }
+
+    fun getAllOrders(): Cursor? {
+        val db = this.readableDatabase
+        return db.rawQuery("SELECT * FROM $TABLE_ORDERS", null)
     }
 }

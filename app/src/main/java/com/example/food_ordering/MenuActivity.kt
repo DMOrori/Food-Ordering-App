@@ -9,19 +9,22 @@ import androidx.recyclerview.widget.RecyclerView
 
 class MenuActivity : AppCompatActivity() {
 
-    private lateinit var menuAdapter: MenuAdapter
+    private lateinit var dbHelper: DatabaseHelper
+    private lateinit var adapter: MenuAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_menu)
 
+        dbHelper = DatabaseHelper(this)
+
         val menuRecyclerView = findViewById<RecyclerView>(R.id.menuRecyclerView)
-        menuRecyclerView.layoutManager = LinearLayoutManager(this)
-
-        menuAdapter = MenuAdapter(MenuData.items)
-        menuRecyclerView.adapter = menuAdapter
-
         val viewCartButton = findViewById<Button>(R.id.viewCartButton)
+
+        menuRecyclerView.layoutManager = LinearLayoutManager(this)
+        
+        loadMenu()
+
         viewCartButton.setOnClickListener {
             val intent = Intent(this, CartActivity::class.java)
             startActivity(intent)
@@ -30,7 +33,12 @@ class MenuActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        // Refresh the list in case a new item was added
-        menuAdapter.notifyDataSetChanged()
+        loadMenu()
+    }
+
+    private fun loadMenu() {
+        val menuItems = dbHelper.getAllMenuItems()
+        adapter = MenuAdapter(menuItems)
+        findViewById<RecyclerView>(R.id.menuRecyclerView).adapter = adapter
     }
 }

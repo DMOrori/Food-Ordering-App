@@ -23,12 +23,14 @@
             </intent-filter>
         </activity>
         <activity android:name=".RegistrationActivity" />
+        <activity android:name=".ForgotPasswordActivity" />
         <activity android:name=".MainActivity" />
         <activity android:name=".MenuActivity" />
         <activity android:name=".CartActivity" />
         <activity android:name=".CheckoutActivity" />
         <activity android:name=".AdminLoginActivity" />
         <activity android:name=".AdminPanelActivity" />
+        <activity android:name=".AddMenuItemActivity" />
     </application>
 
 </manifest>

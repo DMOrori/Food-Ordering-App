@@ -23,6 +23,7 @@ class LoginActivity : AppCompatActivity() {
         val loginButton = findViewById<MaterialButton>(R.id.loginButton)
         val registerRedirectText = findViewById<TextView>(R.id.registerRedirectText)
         val adminLoginButton = findViewById<MaterialButton>(R.id.adminLoginButton)
+        val forgotPasswordText = findViewById<TextView>(R.id.forgotPasswordText)
 
         loginButton.setOnClickListener {
             val email = emailEt.text.toString().trim()
@@ -32,6 +33,8 @@ class LoginActivity : AppCompatActivity() {
                 Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show()
             } else {
                 if (dbHelper.checkUser(email, password)) {
+                    // Store current user email in a session object or Intent
+                    SessionManager.userEmail = email
                     Toast.makeText(this, "Login Successful", Toast.LENGTH_SHORT).show()
                     startActivity(Intent(this, MenuActivity::class.java))
                     finish()
@@ -47,6 +50,10 @@ class LoginActivity : AppCompatActivity() {
 
         adminLoginButton.setOnClickListener {
             startActivity(Intent(this, AdminLoginActivity::class.java))
+        }
+
+        forgotPasswordText.setOnClickListener {
+            startActivity(Intent(this, ForgotPasswordActivity::class.java))
         }
     }
 }
